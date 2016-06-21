@@ -216,27 +216,28 @@ class MergeVideoViewController: UIViewController {
             print("Failed to load 3rd track audio")
         }
         //_____________
-//        let fourthTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
-//        do {
-//            try fourthTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
-//        } catch _ {
-//            print("Failed to load 4t track")
-//        }
-//        
-//        let fourthTrackAudio = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
-//        do {
-//            try fourthTrackAudio.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeAudio)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
-//        } catch _ {
-//            print("Failed to load 4th track audio")
-//        }
+        let fourthTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        do {
+            try fourthTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
+        } catch _ {
+            print("Failed to load 4t track")
+        }
+        
+        let fourthTrackAudio = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        do {
+            try fourthTrackAudio.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeAudio)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
+        } catch _ {
+            print("Failed to load 4th track audio")
+        }
         //_____________
         
         
 
         // 2.1
         let mainInstruction = AVMutableVideoCompositionInstruction()
-//        CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),CMTimeAdd(thirdAsset.duration, fourthAsset.duration)))
-        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
+        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),CMTimeAdd(thirdAsset.duration, fourthAsset.duration)))
+        
+//        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
 
         // 2.2
         let firstInstruction = videoCompositionInstructionForTrack(firstTrack, asset: firstAsset)
@@ -244,26 +245,26 @@ class MergeVideoViewController: UIViewController {
         let secondInstruction = videoCompositionInstructionForTrack(secondTrack, asset: secondAsset)
         
         let thirdInstruction = videoCompositionInstructionForTrack(thirdTrack, asset: thirdAsset)
-//        let fourthInstruction = videoCompositionInstructionForTrack(fourthTrack, asset: fourthAsset)
+        let fourthInstruction = videoCompositionInstructionForTrack(fourthTrack, asset: fourthAsset)
 
         // 2.3
-        mainInstruction.layerInstructions = [firstInstruction, secondInstruction,thirdInstruction]
+        mainInstruction.layerInstructions = [firstInstruction, secondInstruction,thirdInstruction,fourthInstruction]
         let mainComposition = AVMutableVideoComposition()
         mainComposition.instructions = [mainInstruction]
         mainComposition.frameDuration = CMTimeMake(1, 30)
         mainComposition.renderSize = CGSize(width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height)
 
         // 3 - Audio track
-        if let loadedAudioAsset = audioAsset {
-        let audioTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: 0)
-        do {
-        try audioTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, CMTimeAdd(firstAsset.duration, secondAsset.duration)),
-                                     ofTrack: loadedAudioAsset.tracksWithMediaType(AVMediaTypeAudio)[0] ,
-                                     atTime: kCMTimeZero)
-        } catch _ {
-        print("Failed to load Audio track")
-        }
-        }
+//        if let loadedAudioAsset = audioAsset {
+//        let audioTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: 0)
+//        do {
+//        try audioTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, CMTimeAdd(firstAsset.duration, secondAsset.duration)),
+//                                     ofTrack: loadedAudioAsset.tracksWithMediaType(AVMediaTypeAudio)[0] ,
+//                                     atTime: kCMTimeZero)
+//        } catch _ {
+//        print("Failed to load Audio track")
+//        }
+//        }
 
         // 4 - Get path
         let documentDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
