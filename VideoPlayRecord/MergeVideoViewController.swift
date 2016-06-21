@@ -237,14 +237,17 @@ class MergeVideoViewController: UIViewController {
         let mainInstruction = AVMutableVideoCompositionInstruction()
         mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),CMTimeAdd(thirdAsset.duration, fourthAsset.duration)))
         
-//        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
 
         // 2.2
         let firstInstruction = videoCompositionInstructionForTrack(firstTrack, asset: firstAsset)
         firstInstruction.setOpacity(0.0, atTime: firstAsset.duration)
+        
         let secondInstruction = videoCompositionInstructionForTrack(secondTrack, asset: secondAsset)
+        secondInstruction.setOpacity(0.0, atTime: CMTimeAdd(firstAsset.duration,secondAsset.duration))
         
         let thirdInstruction = videoCompositionInstructionForTrack(thirdTrack, asset: thirdAsset)
+        thirdInstruction.setOpacity(0.0, atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration,secondAsset.duration),thirdAsset.duration))
+        
         let fourthInstruction = videoCompositionInstructionForTrack(fourthTrack, asset: fourthAsset)
 
         // 2.3
@@ -254,17 +257,7 @@ class MergeVideoViewController: UIViewController {
         mainComposition.frameDuration = CMTimeMake(1, 30)
         mainComposition.renderSize = CGSize(width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height)
 
-        // 3 - Audio track
-//        if let loadedAudioAsset = audioAsset {
-//        let audioTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: 0)
-//        do {
-//        try audioTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, CMTimeAdd(firstAsset.duration, secondAsset.duration)),
-//                                     ofTrack: loadedAudioAsset.tracksWithMediaType(AVMediaTypeAudio)[0] ,
-//                                     atTime: kCMTimeZero)
-//        } catch _ {
-//        print("Failed to load Audio track")
-//        }
-//        }
+
 
         // 4 - Get path
         let documentDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
