@@ -161,8 +161,8 @@ class MergeVideoViewController: UIViewController {
 
         let firstAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("1", ofType: "m4v")!))
         let secondAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("2", ofType: "m4v")!))
-        //    let thirdAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("3", ofType: "m4v")!))
-        //    let fourthAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("4", ofType: "m4v")!))
+        let thirdAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("3", ofType: "m4v")!))
+        let fourthAsset = AVURLAsset(URL: NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("4", ofType: "m4v")!))
 
 
         activityMonitor.startAnimating()
@@ -186,6 +186,7 @@ class MergeVideoViewController: UIViewController {
         } catch _ {
         print("Failed to load first track audio")
         }
+        //_____________
 
         let secondTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
         do {
@@ -200,18 +201,54 @@ class MergeVideoViewController: UIViewController {
         } catch _ {
             print("Failed to load second track audio")
         }
+        //_____________
+        let thirdTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        do {
+            try thirdTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, thirdAsset.duration), ofTrack: thirdAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime:kCMTimeInvalid )
+//            CMTimeAdd(firstAsset.duration, secondAsset.duration)
+        } catch _ {
+            print("Failed to load 3rd track")
+        }
+        
+        let thirdTrackAudio = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        do {
+            try thirdTrackAudio.insertTimeRange(CMTimeRangeMake(kCMTimeZero, thirdAsset.duration), ofTrack: thirdAsset.tracksWithMediaType(AVMediaTypeAudio)[0], atTime: CMTimeAdd(firstAsset.duration, secondAsset.duration))
+        } catch _ {
+            print("Failed to load 3rd track audio")
+        }
+        //_____________
+//        let fourthTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+//        do {
+//            try fourthTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
+//        } catch _ {
+//            print("Failed to load 4t track")
+//        }
+//        
+//        let fourthTrackAudio = mixComposition.addMutableTrackWithMediaType(AVMediaTypeAudio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+//        do {
+//            try fourthTrackAudio.insertTimeRange(CMTimeRangeMake(kCMTimeZero, fourthAsset.duration), ofTrack: fourthAsset.tracksWithMediaType(AVMediaTypeAudio)[0], atTime: CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
+//        } catch _ {
+//            print("Failed to load 4th track audio")
+//        }
+        //_____________
+        
+        
 
         // 2.1
         let mainInstruction = AVMutableVideoCompositionInstruction()
-        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(firstAsset.duration, secondAsset.duration))
+//        CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),CMTimeAdd(thirdAsset.duration, fourthAsset.duration)))
+        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeAdd(CMTimeAdd(firstAsset.duration, secondAsset.duration),thirdAsset.duration))
 
         // 2.2
         let firstInstruction = videoCompositionInstructionForTrack(firstTrack, asset: firstAsset)
         firstInstruction.setOpacity(0.0, atTime: firstAsset.duration)
         let secondInstruction = videoCompositionInstructionForTrack(secondTrack, asset: secondAsset)
+        
+        let thirdInstruction = videoCompositionInstructionForTrack(thirdTrack, asset: thirdAsset)
+//        let fourthInstruction = videoCompositionInstructionForTrack(fourthTrack, asset: fourthAsset)
 
         // 2.3
-        mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
+        mainInstruction.layerInstructions = [firstInstruction, secondInstruction,thirdInstruction]
         let mainComposition = AVMutableVideoComposition()
         mainComposition.instructions = [mainInstruction]
         mainComposition.frameDuration = CMTimeMake(1, 30)
