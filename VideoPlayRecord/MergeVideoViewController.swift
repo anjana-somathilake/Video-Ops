@@ -204,8 +204,7 @@ class MergeVideoViewController: UIViewController {
         //_____________
         let thirdTrack = mixComposition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
         do {
-            try thirdTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, thirdAsset.duration), ofTrack: thirdAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime:kCMTimeInvalid )
-//            CMTimeAdd(firstAsset.duration, secondAsset.duration)
+            try thirdTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, thirdAsset.duration), ofTrack: thirdAsset.tracksWithMediaType(AVMediaTypeVideo)[0], atTime: CMTimeAdd(firstAsset.duration, secondAsset.duration))
         } catch _ {
             print("Failed to load 3rd track")
         }
