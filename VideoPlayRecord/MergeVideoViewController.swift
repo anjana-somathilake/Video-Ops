@@ -58,7 +58,7 @@ class MergeVideoViewController: UIViewController {
   }
   
   func exportDidFinish(session: AVAssetExportSession) {
-    if session.status == AVAssetExportSessionStatus.Completed {
+//    if session.status == AVAssetExportSessionStatus.Completed {
       let outputURL = session.outputURL
       let library = ALAssetsLibrary()
       if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(outputURL) {
@@ -76,9 +76,10 @@ class MergeVideoViewController: UIViewController {
                                                     let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
                                                     alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
                                                     self.presentViewController(alert, animated: true, completion: nil)
+
         })
       }
-    }
+//    }
     
     activityMonitor.stopAnimating()
     firstAsset = nil
